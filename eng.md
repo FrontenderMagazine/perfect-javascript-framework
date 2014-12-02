@@ -597,7 +597,7 @@ thoughts, tweet them using the[#jsframeworks][14] hashtag.
  [1]: http://emberjs.com/
  [2]: http://backbonejs.org/
  [3]: http://knockoutjs.com/
- [4]: img/repaint-1.jpg
+ [4]: img/repaint-1.gif
  [5]: img/repaint-2.gif
  [6]: img/repaint-3.gif
  [7]: https://facebook.github.io/react/
