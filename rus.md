@@ -437,25 +437,26 @@ Ajax-запросах, а API должно быть таким, чтобы пр�
 
 ## Модульность
 
-I like the idea of turning features off and on. If we don’t use something,
-then why is it in our code base? It would be nice if the framework has a builder
-that generates a version containing only modules that we need. Like, for example
-[YUI][11], which has a configurator. We choose the modules that we want and get
-a minified JavaScript file ready to use.
+Мне нравится, когда фичи можно включать и выключать. А если мы чем-то не
+пользуемся, зачем держать это в кодовой базе? Было бы хорошо, если у фреймворка
+был бы сборщик, который генерирует версию с только необходимыми модулями.
+Как например [YUI][11], у которого есть конфигуратор. Мы выбираем те модули,
+которые хотим, и получаем минифицированный и готовый к использованию файл
+JavaScript.
 
-Even now, there are frameworks that have something usually called *core*.
-Additionally we are able to use bunch of plugins (or modules). However, we could
-improve that. The process of choosing the needed features shouldn’t involve 
-downloading files. We should not include them manually in the page. It ought to 
-be somehow part of the framework’s code.
+Даже так, существуют фреймворки, у которых есть нечто называемое *ядром*.
+Вдобавок к нему мы можем использовать пачку плагинов (или модулей). Но мы могли
+бы это улучшить. Процесс выбора нужных фич не должен включать в себя загрузку
+файлов. Мы не должны их вручную подключать на странице. Это каким-то образом
+должно быть частью кода фреймворка.
 
-After having appropriate setup capabilities, the perfect environment must
-provide extensibility. We should be able to write our own modules and share them
-with other developers. In other words, there should be a friendly environment 
-for creating modules. We can’t develop a strong community without the existence 
-of a proper developer environment.
+Помимо адекватных возможностей при установке, идеальная среда должна
+предусматривать расширяемость. У нас должна быть возможность писать собственные
+плагины и делиться ими с другими разработчиками. Другими словами, среда должна
+быть благоприятной для написания модулей. Не получится создать сильное
+сообщество без существования подходящей среды для разработчиков.
 
-## Public APIs {#public-apis}
+## Открытое API
 
 So far, most of the frameworks provide APIs for their core functionalities.
 However, these APIs give access to parts that vendors think we need. And that’s 
