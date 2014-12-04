@@ -27,7 +27,7 @@
 прочитали в документации, что этот метод создаёт новую страницу с заданным
 шаблоном. Нам неизвестны конкретные детали, потому что это абстракция.
 
-У некоторых из фреймворков сегодняшнего дня даже не один, а несколько слоёв
+У некоторых из фреймворков наших дней даже не один, а несколько слоёв
 абстракций. Иногда чтобы пользоваться фреймворком правильно, нам нужно знать
 детали. Абстрагирование, вообще говоря, мощный инструмент, это обёртка для
 функциональности. Оно инкапсулирует конкретные реализации. Но абстрагирование
@@ -161,35 +161,32 @@
     	Framework.update(['Web', 'is', 'awesome']);
     });
 
+Мы передаём почти те же самые данные, поменялся только первый элемент массива.
+Но из-за того, что мы используем `innerHTML`, перерисовка происходит после
+каждого щелчка. Браузер не знает, что нам надо поменять полько первую строку.
+Он перерисовывает весь список. Давайте запустим DevTools браузера Opera и
+запустим профилирование. Посмотрите на этом анимированном GIF'е, что происходит:
 
-We’re sending almost the same data; we only change the first element of the
-array. However, because we are using`innerHTML`, a repaint is triggered after
-each click. The browser does not know that we need to modify only the first row.
-It repaints the whole list. Let’s use Opera’s DevTools and run the profile. 
-Check out the following animated GIF demonstrating the result:<figure class="
-figure
-">
+![][5]
 
-![][5]</figure>
-Notice that after each click the whole content is repainted. This is a problem
-, especially if we use the same technique heavily on the page.
+Заметьте, после каждого щелчка весь контент перерисовывается. Это проблема,
+особенно, если мы много где на странице используем такую технику.
 
-It is much better if we remember the created `<li>` nodes and only update
-their content. That way, we are not modifying the whole list but only its 
-children. The first change that we have to make is in`setElement`:
+Гораздо лучше запоминать созданные элементы `<li>` и менять только их
+содержимое. Таким образом мы меняем не весь список целиком, а только его
+дочерные узлы. Первое изменение мы можем сделать в `setElement`:
 
     setElement: function(el) {
     	this.list = document.createElement('ul');
     	el.appendChild(this.list);
     	return this;
     }
-    
 
-Like this, we do not need a reference to the host element anymore. We just need
-to create a new`<ul>` element and append it once.
 
-The logic that improves the performance is in the body of the `update` method
-:
+Теперь нам больше не обязательно хранить ссылку на элемент-контейнер. Достаточно
+создать элемент `<ul>` и один раз его добавить в дерево.
+
+Логика, улучшающая производительность, находится внутри метода `update`:
 
     'update': function(list) {
     	for (var i = 0; i < list.length; i++) {
@@ -212,33 +209,33 @@ The logic that improves the performance is in the body of the `update` method
     	}
     	return this;
     }
-    
 
-The first `for` loop goes through the data that is passed in and creates 
-`<li>` elements if necessary. `this.rows` keeps the created tags. If
-there is a node at a certain index, the framework updates its`textContent`
-property when applicable. The loop at the end removes nodes if the passed array 
-has fewer elements than the current one.
+Первый цикл `for` проходит по всем переданным данным и создаёт при необходимости
+элементы `<li>`. Ссылки на эти элементы хранятся в массиве `this.rows`.
+А если там по определённому индексу уже находится элемент, фреймворк лишь
+обновляет по возможности есго свойство `textContent`. Второй цикл удаляет
+элементы, если размер массива больше, чем количество переданных строк.
 
-Here is the result:<figure class="figure">
+Вот результат:
 
 ![][6]</figure>
-The browser repaints only the part that is changed.
 
-The good news is that frameworks like [React][7] are already handling the DOM
-manipulations correctly. The browsers become smarter and they also apply tricks 
-to decrease the repaints. However, it is always good to have this in mind and 
-check what our framework of choice provides.
+Браузер перерисовывает только ту чать, которая именилась.
 
-I hope that in the near future we will be able to stop thinking about such
-problems: frameworks should automatically cover them for us.
+Хорошая новость: фреймворки вроде [React][7] и так уже работают с DOM правильно.
+Браузеры становятся умнее и применяют хитрости для того, чтобы перерисовывать
+как можно меньше. Но всё равно, лучше держать это в уме и проверять, как
+работает выбранный вами фреймворк.
 
-## DOM events handling {#dom-events-handling}
+Я надеюсь, в ближайшем будущем нам можно будет не задумываться о таких вещах,
+и фреймворки будут заботиться об этом сами.
 
-JavaScript based applications usually communicate with the users through DOM
-events. The elements on the page dispatch messages and our code processes them. 
-Here is a piece of Backbone.js code that performs an action when the user 
-interacts with the page:
+## Обработка событий DOM
+
+Приложения на JavaScript обычно взаимодействуют с пользователем через события
+DOM. Элементы на странице посылают события, а наш код их обрабатывает.
+Вот отрывок кода на Backbone.js, который выполняет действие если пользователь
+взимодействует со страницей:
 
     var Navigation = Backbone.View.extend({
     	'events': {
@@ -248,69 +245,66 @@ interacts with the page:
     		// ...
     	}
     });
-    
 
-So, there should be an element matching the `.header.menu` selector and once
-the user clicks on it we have to toggle the menu. The problem with this design 
-is that we bind the JavaScript object to one particular DOM item. If we tweak 
-the HTML and change`.menu`. to `.main-menu` we have to modify the JavaScript
-too. I believe that our controllers should be independent, and we should 
-decouple them from the DOM.
+Итак, должен быть элемент, соответсвующий селектору `.header.menu`, и когда
+пользователь на нём кликнет, мы должны показать или скрыть меню. Проблема
+такого подхода в том, что мы привязывает объект javaScript к одному конкретному
+элементу DOM. Если мы захотим подредактировать разметку и заменить `.menu` на
+`.main-menu`, нам придётся поправить и JavaScript. Я считаю, что контроллеры
+должны быть независимыми, и не следует их жёстко сцеплять с DOM.
 
-By defining functions, we delegate tasks to our JavaScript classes. If these
-tasks are handlers of DOM events, then it makes sense to construct them in the 
-HTML.
+Определяя функции, мы делегируем задачи класса JavaScript. Если эти задачи —
+обработчики событий DOM, есть смысл создавать их из HTML.
 
-I like how AngularJS handles events:
+Мне нравится, как AngularJS орабатывает события.
 
     <a href="#" ng-click="go()">click me</a>
-    
 
-`go` is a function registered in our controller. Following this approach, we do
-not have to think about DOM selectors. We just apply behavior directly to the 
-HTML nodes. It is a powerful approach because we skip the boring interaction 
-with the DOM.
+`go` — это функция, зарегистрированная в нашем контроллере. Если следовать
+такому принципу, нам не нужно задумываться о селекторах DOM. Мы просто применяем
+поведение непосредственно к узлам HTML. Такой подход хорош тем, что он спасает
+от скучной возни с DOM.
 
-In general, I would like to see such kind of logic inside HTML. Interestingly,
-we spent ages convincing developers to split the content (HTML) and the behavior
-(JavaScript); we taught them to avoid inline styling and scripting. However, now
-I see that doing this actually can save us much time and makes our components 
-flexible. Of course, I don’t mean code like this:
+В целом, я был бы рад, если бы такая логика была внутри HTML. Интересно, что
+мы потратили кучу времени на то, чтобы убедить разработчиков разделять
+содержимое (HTML) и поведение (JavaScript), мы отучили их встраивать стили и
+скрипты прямо в HTML. Но теперь я вижу, что это может может сберечь наше время
+и сделать наши компоненты более гибкими. Разумеется, я не имею в виду что-то
+такое:
 
     <div onclick="javascript:App.doSomething(this);">banner text</div>
-    
 
-Instead, I’m talking about descriptive attributes that control the behavior
-of the element. For example:
+
+Я говорю о наглядных атрибутах, которые управляют поведением элемента. Например:
 
     <div data-component="slideshow" data-items="5" data-select="dispatch:selected">
     	...
     </div>
-    
 
-It should not be like JavaScript coding in HTML, but more like setting
-configurations.
+Это не должно выглядеть, как программирование на JavaScript в HTML, скорее это
+должно быть похоже установка конфигурации.
 
-## Dependency management {#dependency-management}
 
-Managing the dependencies is an important job in our development process. We
-usually depend on external functions, modules or libraries. In fact, we are 
-producing dependencies all the time. We don’t write everything into one method. 
-We split the application’s tasks into functions and wire them. In the ideal case,
-we want to encapsulate logic into modules that behave like black boxes. They 
-know details only about their job and nothing else.
+## Управление зависимостями
 
-[RequireJS][8] is one of the popular instruments for resolving dependencies.
-The idea is to wrap your code in a closure that accepts the needed modules:
+Управление зависимостями — важная задача в процессе разработки. Обычно мы
+зависим от внешних функций, модулей или библиотек. Фактически, мы всё время
+создаём зависимости. Мы не пишем всё в одном методе. Мы разносим задачи
+приложения в различные функции, а затем их соединяем. В идеале мы хотим
+инкапсулировать логику в модули, которые ведут себя как чёрные ящики. Они знают
+только те детали, которые касаются их работы, и больше ничего.
+
+[RequireJS][8] — один из популярных инструментов разрешения зависимостей.
+Идея состоит в том, что код оборачивается в замыкание, в которое передаются
+необходимые модули:
 
     require(['ajax', 'router'], function(ajax, router) {
     	// ...
     });
-    
 
-In the example above, our function needs two modules — `ajax` and `router`. The
-magical`require` method reads the passed array and calls our function with the
-proper arguments. The definition of the`router` looks like this:
+В этом примере функции требуется два модуля: `ajax` и `router`. Магический
+метод `require` читает переданный массив и вызывает нашу функцию с нужными
+аргументами. Определение `router` выглядит примерно так:
 
     // router.js
     define(['jquery'], function($) {
@@ -320,15 +314,14 @@ proper arguments. The definition of the`router` looks like this:
     		}
     	}
     });
-    
 
-Notice that we have another dependency here — jQuery. It’s also important
-to mention that we have to return our module’s public API. Otherwise, the code 
-which requires our module can’t access the defined functionalities.
+Заметьте, тут ещё одна зависимость — jQuery. Ещё важная деталь: мы должны
+вернуть публичное API нашего модуля. Иначе код, запросивший наш модуль, не
+смог бы получить доступ к самому функционалу.
 
-AngularJS goes a little bit further by giving us something called *factory*. We
-register our dependencies there, and they are[magically][9] available in our
-controllers. For example:
+AngularJS идёт немного дальше и предоставляет нам нечто под названием *фабрика*.
+Мы регистрируем там свои зависимости, и они [волшебным образом][9] становятся
+доступными в контроллерах. Например:
 
     myModule.factory('greeter', function($window) {
     	return {
@@ -342,48 +335,45 @@ controllers. For example:
     		greeter.greet('Hello World');
     	};
     }
-    
 
-In general, this approach simplifies our job. We don’t have to use a function
-like`require` to fetch the dependency. All we have to do is to type the right
-words in the arguments’ list.
+Вообще говоря, такой подход облегчает работу. Нам не надо использовать
+функций вроде `require` для того чтобы добраться до зависимости. Всё, что
+требуется,— напечатать правильные слова в списке аргументов.
 
-Ok, these two ways of dependency injection work, but they are bound to a
-specific style of code writing. In the future, I would like to see frameworks 
-that eliminate this constraint. It will be much elegant if we are able to apply 
-metadata during the variables’ definition. The language right now doesn’t offer 
-such capabilities. It will be nice if the following is possible:
+Ладно, оба эти способа внедрения зависимостей работают, но каждый из них требует
+своего стиля написания кода. В будущем я хотел бы увидеть фреймворки, в которых
+это ограничение снято. Было бы значительно изящнее применять метаданные при
+создании переменных. Сейчас язык не даёт возможности это сделать. Но было бы
+круто, если бы можно было делать так:
 
     var router:<inject:Router>;
-    
 
-Placing the dependency along with the variable’s definition means that we
-will perform the injection only if needed. RequireJS and AngularJS for example 
-work on a functional level. So, you may use a module only in specific cases, but
-the initialization and its injection happen every time. There is also a specific
-place where we have to define our dependencies. We are bound to that.
 
-## Templates {#templates}
+Если зависимость будет находиться рядом с определением переменной, то мы можем
+быть уверены, что внедрение этой зависимости производится только если она нужна.
+RequireJS и AngularJS, к примеру, работают на функциональном уровне. То есть,
+может случиться так, что вы используете модуль только в определённых случаях,
+но его инициализация и внедрение будут происходить всегда. К тому же, мы можем
+определять зависимости только в строго определённом месте. Мы к этому привязаны.
 
-We use template engines a lot. And we do so because we need to distinguish the
-data from the HTML markup. How do today’s frameworks handle templates? Here are 
-the most popular approaches:
+## Шаблоны
 
-### The template is defined in a `<script>`  {#the-template-is-defined-in
--a-script
-}
+Мы часто пользуемся шаблонами. И мы делаем это из-за необходимости разделять
+данные и разметку HTML. Как же современные фреймворки работают с шаблонами?
+Вот саме распространённые подходы:
+
+### Шаблон определён в `<script>`
 
     <script type="text/x-handlebars">
     	Hello, <strong> </strong>!
     </script>
-    
 
-This is used often because the template is placed in the HTML. It looks natural
-, and it makes sense because HTML naturally contains tags. The browser doesn’t 
-render the contents of`<script>` elements so it doesn’t mess up the
-page’s layout.
+Такой подход часто используется, потому что шаблоны находятся в HTML. Это
+выглядит естесственно и не лишено смысла, раз уж в HTML есть теги. Браузер не
+отрисовывает содержимое элементов `<script>`, и покорёжить внешний вид страницы
+это не может.
 
-### The template is loaded using Ajax {#the-template-is-loaded-using-ajax}
+### Шаблон загружается Ajax'ом
 
     Backbone.View.extend({
     	'template': 'my-view-template',
@@ -393,22 +383,18 @@ page’s layout.
     		});
     	}
     });
-    
 
-We place our code into external HTML files and avoid the usage of additional 
-`<script>` tags. However, this means that we need more HTTP requests
-which is not always appropriate (at least not until HTTP2 becomes more 
-widespread
-).
+Мы положили свой код во внешние файлы HTML и избежали использования
+дополнительных тегов `<script>`. Но теперь нам нужно больше запросов HTTP, а
+это не всегда уместно (по крайней мере, пока поддержка HTTP2 не станет шире). 
 
-*   The template is part of the page’s markup — the framework reads the
-    template from the DOM tree. It relies on already generated HTML. We don’t have 
-    to perform additional HTTP requests, create a new file or add additional
-   `<script>` elements.
+### Шаблон — часть разметки страницы
 
-### The template is part of the JavaScript {#the-template-is-part-of-the-
-javascript
-}
+Фремворк считывает шаблон из дерева DOM. Он полагается на заранее
+сгенерированный HTML. Не нужно производить дополнительных запросов HTTP,
+создавать файлы или добавлять элементы `<script>`
+
+### Шаблон — часть JavaScript
 
     var HelloMessage = React.createClass({
     	render: function() {
@@ -416,40 +402,40 @@ javascript
     		return <div>Hello {this.props.name}</div>;
     	}
     });
-    
 
-This approach introduced by React uses its own parser that converts the invalid
-part of the JavaScript to valid code.
+Такой подход был введён в React, используется собственный парсер, который
+превращает невалидную часть JavaScript в валидный код.
 
-### The template is not HTML {#the-template-is-not-html}
+### Шаблон не HTML
 
-Some frameworks don’t use HTML directly at all. They use templates in the
-form of JSON or YAML.
+Некоторые фреймворки вообще не используют HTML напрямую. Вместо этого шаблоны
+хранятся в виде JSON или YAML.
 
-### Final thoughts about templates {#final-thoughts-about-templates}
 
-Ok, where do we go from here? The framework of the future should make us think
-only about the data and only about the markup. Nothing in between. We don’t want
-to deal with loading HTML strings or passing data to special functions. We want 
-to apply values to variables and get the DOM updated. The popular*two-way data
-binding* should not be a feature, but a *must-have* core functionality.
+### Напоследок о шаблонах
 
-In fact, AngularJS is close to the desired behavior. It reads the template from
-the provided page’s content and has the magical data binding implemented. 
-However, it is still not ideal. Sometimes there is a flickering effect. It 
-happens when the browser renders the HTML but AngularJS’s boot mechanisms are 
-still not fired. Also, AngularJS uses*dirty checking* to find out what is
-changed. This approach could cost a lot in some cases. Hopefully
-[`Object.observe`][10] will soon be supported in all browsers, so that we have
-better data binding.
+Хорошо, а что дальше? Я ожидаю, что с фреймворком будущего мы будем
+рассматривать данные отдельно, а разметку отдельно. Чтобы они не пересекались.
+Мы не хотим иметь дело с загрузкой строк с HTML или с передачей данных в
+специальные функции. Мы хотим присваивать значения переменным, а DOM чтобы
+обновлялся сам. Распространённое *двустороннее связывание* не должно быть
+фичей, это должно быть *обязательным* базовым функционалом.
 
-The question about dynamic templates comes up to every developer sooner or
-later. For sure, we have parts of our application that appear after the 
-bootstrapping. The framework ought to handle that easily. We shouldn’t think 
-about Ajax requests, and we should work with an API that makes the process look 
-synchronous.
+Вообще, поведение AngularJS ближе всего к желаемому. Он считывает шаблон из
+содержимого предоставленной страницы, и в нём реализовано волшебное двусторонее
+связывание. Впрочем, оно ещё не идеально. Иногда наблюдается мерцание. Это
+происхоит когда браузер отрисовывает HTML, но загруочные механизмы AngularJS
+ещё не запустились. К тому же, в AngularJS применяется *грязная проверка* того,
+что что-то поменялось. Такой подход порой очень затратен. Надеюсь, скоро во
+всех браузерах будет поддерживаться [`Object.observe`][10], и связывание будет
+лучше.
 
-## Modularity {#modularity}
+Рано или поздно каждый разработчик сталкивается с вопросом динамических
+шаблонов. Наверняка, в наших приложениях есть части, которые появляются после
+загрузки. С фреймворком это должно быть просто. Мы не должны задумываться об
+Ajax-запросах, а API должно быть таким, чтобы процесс выглядел синхронным.
+
+## Модульность
 
 I like the idea of turning features off and on. If we don’t use something,
 then why is it in our code base? It would be nice if the framework has a builder
