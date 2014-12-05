@@ -458,11 +458,11 @@ JavaScript.
 
 ## Открытое API
 
-So far, most of the frameworks provide APIs for their core functionalities.
-However, these APIs give access to parts that vendors think we need. And that’s 
-the place where hacking becomes an option. We want to achieve something, but we 
-don’t have the right instruments. We trick the framework with some ugly 
-workarounds. Let’s have a look at the following example:
+Большая часть фреймворков предоставляют API к своей базовой функциональности.
+Но при помощи этих API можно добраться только к тем частям, которые поставщики
+посчитали нужными для нас. И вот тут может понадобиться хакерство. Мы хотим
+что-то получить, но для этого нет подходящих инструментов. И приходится идти на
+хитрости и ходить в обход. Рассмотрим такой пример:
 
     var Framework = function() {
     	var router = new Router();
@@ -477,16 +477,15 @@ workarounds. Let’s have a look at the following example:
     	}
     };
     var AboutCtrl = Framework.addRoute('/about');
-    
 
-We have a framework that has a built-in router. We define a path, and our
-controller is automatically initialized. Once the user goes to the right URL, 
-our router fires the`handler` method of the controller. That’s great, but
-what happens if we need to execute a simple JavaScript function as a response to
-the URL matching? For some reason, we don’t want to create a new controller. 
-This is not possible with the current API.
+У такого фреймворка есть встроенный роутер. Мы определяем путь, и контроллер
+инициализируется автоматически. Когда пользоватеь посещает определённый URL?
+роутер вызывает у конструктора метод `handler`. Это здорово, но что если нам
+нужно выполнять небольшую функцию JavaScript при сравнении URL? По какой-то
+причиние мы не хотим создавать дополнительный контроллер. С текущим API такое
+не получится.
 
-We could use another design like this one, for example:
+Мы могли бы сделать по-другому, например, вот так:
 
     var Framework = function() {
     	var router = new Router();
@@ -503,81 +502,82 @@ We could use another design like this one, for example:
     }
     var AboutCtrl = Framework.createController({ 'type': 'about' });
     Framework.addRoute('/about', AboutCtrl.handler);
-    
 
-Notice that we are not exposing our router. It is not visible, but now we have
-control of the two processes — creating the controller and registering a route. 
-Of course, the proposed design matches our personal use case. We may find this 
-approach much complex because we have to create controllers manually. While we 
-design APIs, we have to think about the[single responsibility principle][12]
-and the idea of*doing one thing and doing it right*. I’m seeing that more and
-more frameworks decentralize their functionalities. They split the complex 
-methods in smaller and smaller pieces. That’s a good sign, and I hope that we 
-will see more of this in the future.
+Заметьте, роутер не торчит наружу. Его не видно, но теперь мы можем управлять
+как созданием контроллера, так и регистрацией пути в роутере. Разумеется,
+предложенный вариант подходит для нашей конкретной задачи. Но он может оказаться
+излишне сложным, потому что контроллеры тут приходится создавать вручную.
+При разработке API мы руководствуемся [принципом единственной обязанности][12] и
+рассуждением *делай что-то одно, и делай это хорошо*. Я вижу, как всё больше и
+больше фреймворков децентрализуют свой функционал. В них сложные методы делятся
+на более мелкие части. И это хороший признак, я надеюсь, в будущем больше
+фреймворков будет так делать.
 
-## Testability {#testability}
+## Тестируемость
 
-There is no need to convince you to write tests for your code. The point is not
-only in writing tests, but writing testable code. Sometimes this is extremely 
-difficult and takes time. I’m sure that if we miss a test for something, even 
-small, that’s the exact place where our application will start getting buggy. 
-This is especially the case if we talk about client-side JavaScript. Several 
-browsers, several operating systems, new specs, new features and their polyfills:
-there are so many reasons to start using test-driven development.
+Нет нужды убеждать вас в необходимости писать тесты для кода. Дело даже не
+в том, что надо только писать тесты, а в том, что надо писать код, который
+возможно покрыть тестами. Иногда это невероятно сложно и занимает много времени.
+Я убеждён, что если мы на что-то не напишем тесты, даже на что-то очень
+маленькое, то именно в этом месте в приложении начнут плодиться баги. Это в
+особенности касается JavaScript на клиентской стороне. Несколько браузеров,
+несколько операционных систем, новые спецификации, новые фичи и их полифиллы —
+да полно причин начать практиковать разработку через тестирование.
 
-There is something else that we get from having tests. We are not only proving
-that our framework (application) works today. We make sure that it will work 
-tomorrow and even after that. If there is a new feature that has to land in the 
-code base, we write a test for it. And it is important that we make this test 
-pass. However, it is also important that our previous tests pass as well. This 
-is how we guarantee that we didn’t break anything.
+Есть ещё кое-что, что мы получим от тестов. Мы не только убеждаемся в том, что
+наш фреймворк (приложение) работает сегодня. Мы убеждаемся, что он будет
+работать завтра и послезавтра. Если есть какая-то новая фича, которую мы
+привносим в код, мы пишем для неё тесты. И очень важно, что мы делаем так, чтобы
+эти тесты проходились. Но так же важно, чтобы проходились и предыдущие тесты.
+Именно так мы гарантируем, что ничего не сломалось.
 
-I’d like to see more standardized tools and methods for testing. I wish I
-could use only one tool and test every framework with it. It’s also good if the 
-testing is somehow integrated into the development process. Services like
-[Travis][13] need more attention. They act as an indicator not only for the
-programmer that makes the changes but also for the other contributors.
+Я с радостью бы увидел больше стандартизованных утилит и методов для
+тестирования. Мне хотелось бы использовать одну утилиту для тестирования всех
+фреймворков. Было бы ещё хорошо, если тестирование было бы как-то включено в
+процесс разработки. Следует обратить больше внимания на сервисы вроде
+[Travis][13]. Они работают как индикатор не только для того программиста,
+который вносит изменения, но также и для других контрибуторов.
 
-I’m still working with PHP. I had to deal with frameworks like WordPress for
-example. And a lot of people are asking me how I test my applications: what 
-testing framework do I use? How do I run my tests? Do I even have unit tests? 
-The truth is that I don’t. And that’s because I don’t have units. The same goes 
-for some JavaScript frameworks. It is difficult to test some parts of them 
-because they do not have units. The developers should also think in this 
-direction. Yes, they have to give us smart, elegant and working code. But that 
-code should be testable, too.
+Я всё ещё работаю с PHP. Мне приходилось иметь дело с фреймворками вроде
+WordPress. И множество людей спрашивало меня, как я тестирую свои приложения:
+коакой фреймворк я использую, как я запускаю тесты, есть ли у меня вообще
+компонен. Правда в том, что я ничего не тестирую. И всё потому у меня нет
+компонентов. То же самое относится и некоторым фреймворкам на JavaScript.
+Некоторые их части тяжело тестировать, потому что они не дробятся на компоненты.
+Разработчикам следует подумать и в этом направлении. Да, они предоставляют нам
+умный, изящный и рабочий код. Но код должен быть ещё и тестируемым.
 
-## Documentation {#documentation}
+## Документация
 
-I believe that without good documentation any project will die sooner or later
-. We have so many frameworks and libraries coming out every week. Documentation 
-is the first thing that the developers see. No one wants to spend hours 
-searching about what the certain tool is doing or what its features are. Only 
-listing of the main functionalities is not enough. Especially for a big 
-framework.
+Я уверен, что без хорошей документации любой проект рано или поздно загнётся.
+Каждую неделю выходит куча фреймворков и библиотек. Документация — это первое,
+что видит разработчик. Никто не хочет тратить часы на то, что узнать, что делает
+определённая утилита, и какие у неё фичи. Недостаточно простого перечисления
+основного функционала. Особенно для большого фреймворка.
 
-I could split the successful documentation into three parts:
+Я бы разделил хорошую документацию на три части:
 
-*   *What you can do* section — the documentation has to teach the users, and
-    it should do it right. No matter how awesome and powerful our framework is, 
-    there really has to be a proper explanation. Some people prefer watching video 
-    clips, others — reading articles. In both cases, the vendor should lead the 
-    developers from the very basic stuff to the advanced components of the framework.
-   
-*   *API documentation* — this is usually included. It’s a list of all the
-    public methods of the framework, their parameters, what they return and maybe an
-    example usage.
-   
-*   *How it works* section — usually this section is missing. It’s nice if
-    someone explains the structure of the framework — even a simple schema of the 
-    core functionalities and their relation will help. This will make the code 
-    transparent. It will help the developers who want to make custom modifications.
-   
+*   *Что я могу сделать*. Документация должна учить пользователя и должна делать
+    это правильно. Неважно, насколько крутой или мощный у нас фреймворк, он
+    нуждается в объяснении. Кто-то предпочитает смотреть видео, кто-то читать
+    статьи. В любом случае, разработчику нужно показать всё, начиная с самых
+    основ и заканчивая сложными компонентами фреймворка.
 
-It is, of course, difficult to predict the future. What we can do though is to
-dream about it! It is important that we talk about what we expect and what we 
-need from JavaScript frameworks! If you have any feedback or want to share your 
-thoughts, tweet them using the[#jsframeworks][14] hashtag.
+*   *Документация API*. Это обычно везде есть. Полный список всех публичных
+    методов API, того, какие у них параметры и что они возвращают. Может быть,
+    примеры использования.
+
+*   *Как это работает*. Обычно этого раздела в документациях нет. Хорошо, если
+    бы кто-нибудь разъяснил структуру фреймворка, даже простая схема базовых
+    функциональностей и их взаимосвязей уже бы помогла. Это сделало бы код
+    прозрачным. Это помогло бы тем разработчикам, которые хотят внести свои
+    изменения.
+
+
+Будущее, конечно, тяжело предугадать. Но зато мы можем о нём помечтать!
+Важно говорить о том, что мы ожидаем и что мы хотим от фреймворков на
+JavaScript! Если у вас есть замечания, предложения или вы хотите поделится
+своими мыслями, пишите в твиттер с хэштегом [#jsframeworks][14].
 
  [1]: http://emberjs.com/
  [2]: http://backbonejs.org/
@@ -591,6 +591,6 @@ thoughts, tweet them using the[#jsframeworks][14] hashtag.
  [9]: http://krasimirtsonev.com/blog/article/Dependency-injection-in-JavaScript#the-reflection-approach
  [10]: http://www.html5rocks.com/en/tutorials/es7/observe/
  [11]: http://yuilibrary.com/yui/configurator/
- [12]: http://en.wikipedia.org/wiki/Single_responsibility_principle
+ [12]: https://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%B8%D0%BD%D1%86%D0%B8%D0%BF_%D0%B5%D0%B4%D0%B8%D0%BD%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BE%D0%B1%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D0%B8
  [13]: https://travis-ci.org/
  [14]: https://twitter.com/hashtag/jsframeworks
