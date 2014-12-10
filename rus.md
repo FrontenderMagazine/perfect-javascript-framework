@@ -15,10 +15,10 @@
 системой, появляется большой разрыв между «я этим пользуюсь» и «я знаю, как
 это работает». К примеру, такой код скрывает сложность:
 
-  var page = Framework.createPage({
-    'type': 'home',
-    'visible': true
-  });
+    var page = Framework.createPage({
+        'type': 'home',
+        'visible': true
+    });
 
 Предположим, что это реальный фреймворк. Под капотом `createPage` создает
 новый класс *отображения*, который загружает шаблон из `home.html`.
@@ -36,10 +36,10 @@
 
 А что если мы перепишем пример выше вот так:
 
-  var page = Framework.createPage();
-  page
-    .loadTemplate('home.html')
-    .appendToDOM();
+    var page = Framework.createPage();
+    page
+        .loadTemplate('home.html')
+        .appendToDOM();
 
 Теперь разработчик знает, что происходит. Создание шаблона и вставка в дерево
 теперь производятся разными методами API. Так что программист может что-то
@@ -49,11 +49,11 @@
 построить одностраничное приложение всего несколькими строчками кода. Но всё
 имеет свою цену. Он объявляет за кулисами несколько классов. К примеру:
 
-  App.Router.map(function() {
-    this.resource('posts', function() {
-      this.route('new');
+    App.Router.map(function() {
+        this.resource('posts', function() {
+            this.route('new');
+        });
     });
-  });
 
 
 Фреймворк создаёт три маршрута, и за каждым закреплён контроллер. Можете
@@ -71,15 +71,15 @@
 программистом. Класс `DocumentView` расширяет `Backbone.View`. Это всё.
 Всего один уровень между нашим кодом и кодом ядра фреймворка.
 
-  var DocumentView = Backbone.View.extend({
-    'tagName': 'li',
-    'events': {
-      'mouseover .title .date': 'showTooltip',
-      'click .open': 'render'
-    },
-    'render': function() { ... },
-    'showTooltip': function() { ... }
-  });
+    var DocumentView = Backbone.View.extend({
+        'tagName': 'li',
+        'events': {
+            'mouseover .title .date': 'showTooltip',
+            'click .open': 'render'
+        },
+        'render': function() { ... },
+        'showTooltip': function() { ... }
+    });
 
 
 Лично я предпочитаю фреймворки, в которых нет множества уровней абстракций,
@@ -92,21 +92,21 @@
 Я был бы рад увидеть больше фреймворков, позволяющих нам делать именно так.
 Вот, к примеру [Knockout][3]:
 
-  function ViewModel(first, last) {
-    this.firstName = ko.observable(first);
-    this.lastName = ko.observable(last);
-  }
-  ko.applyBindings(new ViewModel("Planet", "Earth"))
+    function ViewModel(first, last) {
+        this.firstName = ko.observable(first);
+        this.lastName = ko.observable(last);
+    }
+    ko.applyBindings(new ViewModel("Planet", "Earth"))
 
 Мы объявляем модель и сами же её инициализируем. А вот в AngularJS чуть
 по-другому:
 
-  function TodoCtrl($scope) {
-    $scope.todos = [
-      { 'text': 'learn angular', 'done': true },
-      { 'text': 'build an angular app', 'done': false }
-    ];
-  }
+    function TodoCtrl($scope) {
+        $scope.todos = [
+            { 'text': 'learn angular', 'done': true },
+            { 'text': 'build an angular app', 'done': false }
+        ];
+    }
 
 Опять таки, мы объявляем наш класс, но мы его не запускаем. Мы только говорим,
 что это наш контроллер, а фреймворк решает, что с ним делать. Нас может сбить
@@ -120,32 +120,32 @@
 пересчёт размеров или перерисовку, а это могут быть весьма дорогостоящие
 операции. Давайте в качестве примера разберём такой класс:
 
-  var Framework = {
-    'el': null,
-    'setElement': function(el) {
-      this.el = el;
-      return this;
-    },
-    'update': function(list) {
-      var str = '<ul>';
-      for (var i = 0; i < list.length; i++) {
-        var li = document.createElement('li');
-        li.textContent = list[i];
-        str += li.outerHTML;
-      }
-      str += '</ul>';
-      this.el.innerHTML = str;
-      return this;
+    var Framework = {
+        'el': null,
+        'setElement': function(el) {
+            this.el = el;
+            return this;
+        },
+        'update': function(list) {
+            var str = '<ul>';
+            for (var i = 0; i < list.length; i++) {
+                var li = document.createElement('li');
+                li.textContent = list[i];
+                str += li.outerHTML;
+            }
+            str += '</ul>';
+            this.el.innerHTML = str;
+            return this;
+        }
     }
-  }
 
 Этот крошечный фреймворк генерирует ненумерованный список с нужными данными.
 Мы передаём элемент DOM, в котором следует поместить список, и вызываем функцию
 `update`, которая отображает данные на экране.
 
-  Framework
-    .setElement(document.querySelector('.content'))
-    .update(['JavaScript', 'is', 'awesome']);
+    Framework
+        .setElement(document.querySelector('.content'))
+        .update(['JavaScript', 'is', 'awesome']);
 
 
 Вот, что у нас из этого вышло:
@@ -156,9 +156,9 @@
 ссылку и назначим на ней обработчик события `click`. Функция снова вызовет метод
 `update`, но с другими элементами списка:
 
-  document.querySelector('a').addEventListener('click', function() {
-    Framework.update(['Web', 'is', 'awesome']);
-  });
+    document.querySelector('a').addEventListener('click', function() {
+        Framework.update(['Web', 'is', 'awesome']);
+    });
 
 Мы передаём почти те же самые данные, поменялся только первый элемент массива.
 Но из-за того, что мы используем `innerHTML`, перерисовка происходит после
@@ -175,11 +175,11 @@
 содержимое. Таким образом, мы меняем не весь список целиком, а только его
 дочерние узлы. Первое изменение мы можем сделать в `setElement`:
 
-  setElement: function(el) {
-    this.list = document.createElement('ul');
-    el.appendChild(this.list);
-    return this;
-  }
+    setElement: function(el) {
+        this.list = document.createElement('ul');
+        el.appendChild(this.list);
+        return this;
+    }
 
 
 Теперь нам больше не обязательно хранить ссылку на элемент-контейнер. Достаточно
@@ -187,27 +187,27 @@
 
 Логика, улучшающая производительность, находится внутри метода `update`:
 
-  'update': function(list) {
-    for (var i = 0; i < list.length; i++) {
-      if (!this.rows[i]) {
-        var row = document.createElement('LI');
-        row.textContent = list[i];
-        this.rows[i] = row;
-        this.list.appendChild(row);
-      } else if (this.rows[i].textContent !== list[i]) {
-        this.rows[i].textContent = list[i];
-      }
-    }
-    if (list.length < this.rows.length) {
-      for (var i = list.length; i < this.rows.length; i++) {
-        if (this.rows[i] !== false) {
-          this.list.removeChild(this.rows[i]);
-          this.rows[i] = false;
+    'update': function(list) {
+        for (var i = 0; i < list.length; i++) {
+            if (!this.rows[i]) {
+                var row = document.createElement('LI');
+                row.textContent = list[i];
+                this.rows[i] = row;
+                this.list.appendChild(row);
+            } else if (this.rows[i].textContent !== list[i]) {
+                this.rows[i].textContent = list[i];
+            }
         }
-      }
+        if (list.length < this.rows.length) {
+            for (var i = list.length; i < this.rows.length; i++) {
+                if (this.rows[i] !== false) {
+                    this.list.removeChild(this.rows[i]);
+                    this.rows[i] = false;
+                }
+            }
+        }
+        return this;
     }
-    return this;
-  }
 
 Первый цикл `for` проходит по всем переданным строкам и создаёт при
 необходимости элементы `<li>`.
@@ -237,14 +237,14 @@ DOM. Элементы на странице посылают события, а 
 Вот отрывок кода на Backbone.js, который выполняет действие, если пользователь
 взаимодействует со страницей:
 
-  var Navigation = Backbone.View.extend({
-    'events': {
-      'click .header.menu': 'toggleMenu'
-    },
-    'toggleMenu': function() {
-      // ...
-    }
-  });
+    var Navigation = Backbone.View.extend({
+        'events': {
+            'click .header.menu': 'toggleMenu'
+        },
+        'toggleMenu': function() {
+            // ...
+        }
+    });
 
 Итак, должен быть элемент, соответствующий селектору `.header.menu`, и когда
 пользователь на нём кликнет, мы должны показать или скрыть меню. Проблема
@@ -258,7 +258,7 @@ DOM. Элементы на странице посылают события, а 
 
 Мне нравится, как AngularJS обрабатывает события.
 
-  <a href="#" ng-click="go()">click me</a>
+    <a href="#" ng-click="go()">click me</a>
 
 `go` — это функция, зарегистрированная в нашем контроллере. Если следовать
 такому принципу, нам не нужно задумываться о селекторах DOM. Мы просто применяем
@@ -272,14 +272,14 @@ DOM. Элементы на странице посылают события, а 
 и сделать наши компоненты более гибкими. Разумеется, я не имею в виду что-то
 такое:
 
-  <div onclick="javascript:App.doSomething(this);">banner text</div>
+    <div onclick="javascript:App.doSomething(this);">banner text</div>
 
 
 Я говорю о наглядных атрибутах, которые управляют поведением элемента. Например:
 
-  <div data-component="slideshow" data-items="5" data-select="dispatch:selected">
-    ...
-  </div>
+    <div data-component="slideshow" data-items="5" data-select="dispatch:selected">
+        ...
+    </div>
 
 Это не должно выглядеть, как программирование на JavaScript в HTML, скорее это
 должно быть похоже на установку конфигурации.
@@ -298,22 +298,22 @@ DOM. Элементы на странице посылают события, а 
 Идея состоит в том, что код оборачивается в замыкание, в которое передаются
 необходимые модули:
 
-  require(['ajax', 'router'], function(ajax, router) {
-    // ...
-  });
+    require(['ajax', 'router'], function(ajax, router) {
+        // ...
+    });
 
 В этом примере функции требуется два модуля: `ajax` и `router`. Магический
 метод `require` читает переданный массив и вызывает нашу функцию с нужными
 аргументами. Определение `router` выглядит примерно так:
 
-  // router.js
-  define(['jquery'], function($) {
-    return {
-      'apiMethod': function() {
-        // ...
-      }
-    }
-  });
+    // router.js
+    define(['jquery'], function($) {
+        return {
+            'apiMethod': function() {
+                // ...
+            }
+        }
+    });
 
 Заметьте, тут ещё одна зависимость — jQuery. Ещё важная деталь: мы должны
 вернуть публичное API нашего модуля. Иначе код, запросивший наш модуль, не
@@ -323,18 +323,18 @@ AngularJS идёт немного дальше и предоставляет н�
 Мы регистрируем там свои зависимости, и они [волшебным образом][9] становятся
 доступными в контроллерах. Например:
 
-  myModule.factory('greeter', function($window) {
-    return {
-      'greet': function(text) {
-        alert(text);
-      }
-    };
-  });
-  function MyController($scope, greeter) {
-    $scope.sayHello = function() {
-      greeter.greet('Hello World');
-    };
-  }
+    myModule.factory('greeter', function($window) {
+        return {
+            'greet': function(text) {
+                alert(text);
+            }
+        };
+    });
+    function MyController($scope, greeter) {
+        $scope.sayHello = function() {
+            greeter.greet('Hello World');
+        };
+    }
 
 Вообще говоря, такой подход облегчает работу. Нам не надо использовать
 функций вроде `require` для того чтобы добраться до зависимости. Всё, что
@@ -346,7 +346,7 @@ AngularJS идёт немного дальше и предоставляет н�
 создании переменных. Сейчас язык не даёт возможности это сделать. Но было бы
 круто, если бы можно было делать так:
 
-  var router:<inject:Router>;
+    var router:<inject:Router>;
 
 
 Если зависимость будет находиться рядом с определением переменной, то мы можем
@@ -364,9 +364,9 @@ RequireJS и AngularJS, к примеру, работают на функцио�
 
 ### Шаблон определён в `<script>`
 
-  <script type="text/x-handlebars">
-    Hello, <strong> </strong>!
-  </script>
+    <script type="text/x-handlebars">
+        Hello, <strong> </strong>!
+    </script>
 
 Такой подход часто используется, потому что шаблоны находятся в HTML. Это
 выглядит естественно и не лишено смысла, раз уж в HTML есть теги. Браузер не
@@ -375,14 +375,14 @@ RequireJS и AngularJS, к примеру, работают на функцио�
 
 ### Шаблон загружается AJAX'ом
 
-  Backbone.View.extend({
-    'template': 'my-view-template',
-    'render': function() {
-      $.get('/templates/' + this.template + '.html', function(template) {
-        var html = $(template).tmpl();
-      });
-    }
-  });
+    Backbone.View.extend({
+        'template': 'my-view-template',
+        'render': function() {
+            $.get('/templates/' + this.template + '.html', function(template) {
+                var html = $(template).tmpl();
+            });
+        }
+    });
 
 Мы положили свой код во внешние файлы HTML и избежали использования
 дополнительных тегов `<script>`. Но теперь нам нужно больше запросов HTTP, а
@@ -396,12 +396,12 @@ RequireJS и AngularJS, к примеру, работают на функцио�
 
 ### Шаблон — часть JavaScript
 
-  var HelloMessage = React.createClass({
-    render: function() {
-      // Note: the following line is invalid JavaScript.
-      return <div>Hello {this.props.name}</div>;
-    }
-  });
+    var HelloMessage = React.createClass({
+        render: function() {
+            // Note: the following line is invalid JavaScript.
+            return <div>Hello {this.props.name}</div>;
+        }
+    });
 
 Такой подход был введён в React, там используется собственный парсер, который
 превращает невалидную часть JavaScript в валидный код.
@@ -464,19 +464,19 @@ JavaScript.
 что-то получить, но для этого нет подходящих инструментов. И приходится идти на
 хитрости и ходить в обход. Рассмотрим такой пример:
 
-  var Framework = function() {
-    var router = new Router();
-    var factory = new ControllerFactory();
-    return {
-      'addRoute': function(path) {
-        var rData = router.resolve(path);
-        var controller = factory.get(rData.controllerType);
-        router.register(path, controller.handler);
-        return controller;
-      }
-    }
-  };
-  var AboutCtrl = Framework.addRoute('/about');
+    var Framework = function() {
+        var router = new Router();
+        var factory = new ControllerFactory();
+        return {
+            'addRoute': function(path) {
+                var rData = router.resolve(path);
+                var controller = factory.get(rData.controllerType);
+                router.register(path, controller.handler);
+                return controller;
+            }
+        }
+    };
+    var AboutCtrl = Framework.addRoute('/about');
 
 У такого фреймворка есть встроенный маршрутизатор. Мы определяем путь, и контроллер
 инициализируется автоматически. Когда пользователь посещает определённый URL,
@@ -487,21 +487,21 @@ JavaScript.
 
 Мы могли бы сделать по-другому, например, вот так:
 
-  var Framework = function() {
-    var router = new Router();
-    var factory = new ControllerFactory();
-    return {
-      'createController': function(path) {
-        var rData = router.resolve(path);
-        return factory.get(rData.controllerType);
-      }
-      'addRoute': function(path, handler) {
-        router.register(path, handler);
-      }
+    var Framework = function() {
+        var router = new Router();
+        var factory = new ControllerFactory();
+        return {
+            'createController': function(path) {
+                var rData = router.resolve(path);
+                return factory.get(rData.controllerType);
+            }
+            'addRoute': function(path, handler) {
+                router.register(path, handler);
+            }
+        }
     }
-  }
-  var AboutCtrl = Framework.createController({ 'type': 'about' });
-  Framework.addRoute('/about', AboutCtrl.handler);
+    var AboutCtrl = Framework.createController({ 'type': 'about' });
+    Framework.addRoute('/about', AboutCtrl.handler);
 
 Заметьте, маршрутизатор не торчит наружу. Его не видно, но теперь мы можем управлять
 как созданием контроллера, так и регистрацией пути в маршрутизаторе. Разумеется,
@@ -558,20 +558,20 @@ WordPress. И множество людей спрашивало меня, ка�
 Я бы разделил хорошую документацию на три части:
 
 *  *Что я могу сделать*. Документация должна учить пользователя и должна делать
-  это правильно. Неважно, насколько крутой или мощный у нас фреймворк, он
-  нуждается в объяснении. Кто-то предпочитает смотреть видео, кто-то читать
-  статьи. В любом случае, разработчику нужно показать всё, начиная с самых
-  основ и заканчивая сложными частями фреймворка.
+    это правильно. Неважно, насколько крутой или мощный у нас фреймворк, он
+    нуждается в объяснении. Кто-то предпочитает смотреть видео, кто-то читать
+    статьи. В любом случае, разработчику нужно показать всё, начиная с самых
+    основ и заканчивая сложными частями фреймворка.
 
 *  *Документация API*. Это обычно везде есть. Полный список всех публичных
-  методов API, того, какие у них параметры и что они возвращают. Может быть,
-  примеры использования.
+    методов API, того, какие у них параметры и что они возвращают. Может быть,
+    примеры использования.
 
 *  *Как это работает*. Обычно этого раздела в документациях нет. Хорошо, если
-  бы кто-нибудь разъяснил структуру фреймворка, даже простая схема базового 
-  функционала и его взаимосвязей уже бы помогла. Это сделало бы код
-  прозрачным. Это помогло бы тем разработчикам, которые хотят внести свои
-  изменения.
+    бы кто-нибудь разъяснил структуру фреймворка, даже простая схема базового 
+    функционала и его взаимосвязей уже бы помогла. Это сделало бы код
+    прозрачным. Это помогло бы тем разработчикам, которые хотят внести свои
+    изменения.
 
 
 Будущее, конечно, тяжело предугадать. Но зато мы можем о нём помечтать!
@@ -579,18 +579,17 @@ WordPress. И множество людей спрашивало меня, ка�
 JavaScript! Если у вас есть замечания, предложения или вы хотите поделится
 своими мыслями, пишите в твиттер с хэштегом [#jsframeworks][14].
 
- [1]: http://emberjs.com/
- [2]: http://backbonejs.org/
- [3]: http://knockoutjs.com/
- [4]: img/repaint-1.gif
- [5]: img/repaint-2.gif
- [6]: img/repaint-3.gif
- [7]: https://facebook.github.io/react/
- [8]: http://requirejs.org/
-
- [9]: http://krasimirtsonev.com/blog/article/Dependency-injection-in-JavaScript#the-reflection-approach
- [10]: http://www.html5rocks.com/en/tutorials/es7/observe/
- [11]: http://yuilibrary.com/yui/configurator/
- [12]: https://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%B8%D0%BD%D1%86%D0%B8%D0%BF_%D0%B5%D0%B4%D0%B8%D0%BD%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BE%D0%B1%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D0%B8
- [13]: https://travis-ci.org/
- [14]: https://twitter.com/hashtag/jsframeworks
+[1]: http://emberjs.com/
+[2]: http://backbonejs.org/
+[3]: http://knockoutjs.com/
+[4]: img/repaint-1.gif
+[5]: img/repaint-2.gif
+[6]: img/repaint-3.gif
+[7]: https://facebook.github.io/react/
+[8]: http://requirejs.org/
+[9]: http://krasimirtsonev.com/blog/article/Dependency-injection-in-JavaScript#the-reflection-approach
+[10]: http://www.html5rocks.com/en/tutorials/es7/observe/
+[11]: http://yuilibrary.com/yui/configurator/
+[12]: https://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%B8%D0%BD%D1%86%D0%B8%D0%BF_%D0%B5%D0%B4%D0%B8%D0%BD%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%BE%D0%B1%D1%8F%D0%B7%D0%B0%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D0%B8
+[13]: https://travis-ci.org/
+[14]: https://twitter.com/hashtag/jsframeworks
